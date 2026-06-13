@@ -20,7 +20,7 @@ interface ExperienceProviderProps {
 // Backed by React state only (no external store) per BRAIN.md.
 export function ExperienceProvider({
   children,
-  initialState = ExperienceState.ExteriorOrbit,
+  initialState = ExperienceState.Landing,
 }: ExperienceProviderProps) {
   const [state, setState] = useState<ExperienceState>(initialState);
 

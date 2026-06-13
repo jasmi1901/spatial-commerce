@@ -1,7 +1,7 @@
 import { Home, Info, LayoutGrid, Mail, Moon, Sun } from 'lucide-react';
 import { useTheme } from '../../lib/theme/ThemeProvider';
 import { useContentView } from '../../lib/ContentContext';
-import { scrollShowroomToTop } from '../../lib/scroll';
+import { VRButton } from './VRButton';
 
 interface MobileBarProps {
   onNavigate?: (page: string) => void;
@@ -17,9 +17,9 @@ export function MobileBar({ onNavigate }: MobileBarProps) {
       <div className="flex items-center justify-between flex-1">
         <button
           type="button"
-          aria-label="Home"
-          onClick={scrollShowroomToTop}
-          className="w-11 h-11 rounded-full flex items-center justify-center bg-white shadow-sm dark:bg-white/20 text-gray-900 dark:text-white transition-all"
+          aria-label="Reload — back to start"
+          onClick={() => window.location.reload()}
+          className="glass-button w-11 h-11 rounded-full flex items-center justify-center text-gray-900 dark:text-white hover:scale-105 active:scale-95 transition-transform"
         >
           <Home className="w-5 h-5" />
         </button>
@@ -46,6 +46,7 @@ export function MobileBar({ onNavigate }: MobileBarProps) {
         <button type="button" aria-label="Messages" className="w-11 h-11 rounded-full flex items-center justify-center text-gray-900/70 hover:text-gray-900 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10 transition-all">
           <Mail className="w-5 h-5" />
         </button>
+        <VRButton className="w-11 h-11 rounded-full flex items-center justify-center text-gray-900/70 hover:text-gray-900 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10 transition-all" />
         <button
           type="button"
           aria-label="Toggle Theme"

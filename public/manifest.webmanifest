@@ -1,0 +1,19 @@
+{
+  "name": "Spatial Commerce",
+  "short_name": "Spatial",
+  "description": "A spatial commerce bookstore experience.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0f",
+  "theme_color": "#863bff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

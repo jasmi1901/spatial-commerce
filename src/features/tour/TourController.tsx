@@ -3,26 +3,28 @@ import { tourSheet } from '../../lib/theatre/project';
 import { TOUR_LENGTH } from './tourStops';
 
 interface TourControllerProps {
-  active: boolean;
+  /**
+   * Hands-free auto-play of the tour sequence. Default false: the scroll journey
+   * (useScrollJourney) is the sole writer of the playhead, so this stays inert to
+   * avoid dual writers. Phase 4 enables it for an optional "play tour" affordance.
+   */
+  autoPlay?: boolean;
 }
 
-// Plays the Theatre.js camera sequence while the guided tour is active. Lives
-// outside the R3F Canvas — it controls the sheet's playhead; the @theatre/r3f
-// <PerspectiveCamera theatreKey="Camera"> in the scene applies the authored pose.
-//
-// The explicit range drives the playhead across the full tour timeline even
-// before Studio keyframes exist (the placeholder choreography reads the playhead
-// position). Rate is kept below 1 for slow, premium pacing (BRAIN.md).
-export function TourController({ active }: TourControllerProps) {
+// Drives the Theatre.js sheet playhead when auto-play is requested. Lives outside
+// the R3F Canvas — it controls the sheet; <TheatreCamera> in the scene reads the
+// playhead and applies the resulting pose to the camera.
+export function TourController({ autoPlay = false }: TourControllerProps) {
   useEffect(() => {
-    if (!active) return;
+    if (!autoPlay) return;
     const sequence = tourSheet.sequence;
     sequence.position = 0;
+    // Rate < 1 for slow, premium pacing (BRAIN.md camera philosophy).
     void sequence.play({ iterationCount: 1, range: [0, TOUR_LENGTH], rate: 0.6 });
     return () => {
       sequence.pause();
     };
-  }, [active]);
+  }, [autoPlay]);
 
   return null;
 }

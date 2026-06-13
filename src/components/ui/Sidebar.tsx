@@ -3,6 +3,7 @@ import { useTheme } from '../../lib/theme/ThemeProvider';
 import { useContentView } from '../../lib/ContentContext';
 import { scrollShowroomToTop } from '../../lib/scroll';
 import { ProductCatalog } from './ProductCatalog';
+import { VRButton } from './VRButton';
 
 interface SidebarProps {
   onNavigate?: (page: string) => void;
@@ -72,7 +73,8 @@ export function Sidebar({ onNavigate }: SidebarProps) {
             </button>
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-3">
+            <VRButton className="w-14 h-14 rounded-full flex items-center justify-center text-gray-900/70 hover:text-gray-900 hover:bg-black/5 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/10 transition-all" />
             <button
               type="button"
               aria-label="Toggle Theme"

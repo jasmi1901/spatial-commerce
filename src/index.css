@@ -1,36 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+  /* Body / UI — visionOS uses SF Pro; render it natively on Apple platforms,
+     with Inter (its closest web cousin) as the cross-platform fallback. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+  /* Titles keep Ubuntu (use the `font-display` utility on headings). */
+  --font-display: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer utilities {
+  /* visionOS "glass" material: heavy blur + saturation (vibrancy) makes the
+     world behind it glow through; a bright top-edge specular + hairline inner
+     stroke read as real glass; translucent fill kept opaque enough for legible
+     text. The soft, large shadow lets the surface float in space. */
   .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.22) 100%),
+      rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(60px) saturate(200%);
+    -webkit-backdrop-filter: blur(60px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 24px 70px -20px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
   }
   .dark .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 100%),
+      rgba(24, 25, 31, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 24px 70px -20px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
   }
 
   .glass-button {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   }
   .dark .glass-button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  /* Gaze/hover highlight — controls brighten softly when looked at/hovered. */
+  .glass-button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  .dark .glass-button:hover {
     background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   }
 
   .text-shadow-sm {
@@ -51,6 +80,25 @@
   .animate-floaty {
     animation: floaty 4s ease-in-out infinite;
   }
+
+  /* Content-panel narrative cross-fade on journey-stop change (calm, brief). */
+  .animate-panel {
+    animation: panel-fade 0.5s ease-out;
+  }
+
+  /* Smoothly fades a layer in/out. Unlike Tailwind's `invisible`, the
+     visibility flip is DELAYED until the opacity fade finishes, so fade-out is
+     smooth (no instant pop) while still removing the layer from hit-testing. */
+  .fade-layer {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 900ms ease, visibility 0s linear 900ms;
+  }
+  .fade-layer.is-shown {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 900ms ease, visibility 0s;
+  }
 }
 
 @keyframes floaty {
@@ -59,6 +107,24 @@
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes panel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-floaty,
+  .animate-panel {
+    animation: none;
   }
 }
 

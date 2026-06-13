@@ -1,43 +1,52 @@
 import { ExperienceState } from '../../lib/experience';
 
-// Tour stops — the spine of the guided interior tour (BRAIN.md → Pillar 4).
-// Each stop maps a point on the Theatre.js sequence timeline to an experience
-// state and a camera pose. This is the shared contract between the sequence
-// playhead, the experience state machine, and the placeholder choreography.
+// The journey spine — one ordered list of cinematic stops that everything derives
+// from (camera spline, progress↔state mapping, Next/Back nav, per-stop content).
+// Expresses BRAIN.md's beats: Landing → Descent → Exterior reveal/orbit → UI Reveal
+// → Interior Entry → Guided Tour (stops 01–04).
 //
-// Camera narrative ownership: these poses are a calm, premium PLACEHOLDER so the
-// tour works out of the box. They are superseded by Studio-authored keyframes
-// once exported into `lib/theatre/state.ts` (suruosh / Creative Director).
+// Timeline position is the array INDEX (so inserting a stop never renumbers).
+// Camera poses are approximate and tunable — the real choreography is authored in
+// Theatre Studio later (TheatreCamera's hasAuthoredTour path), which supersedes
+// these without changing the journey structure.
 
-export interface TourStop {
-  /** Position on the Theatre sequence timeline, in seconds. */
-  position: number;
-  /** Experience state this stop represents (shared vocabulary). */
+export interface JourneyStop {
+  id: string;
   state: ExperienceState;
-  /** Camera world position at this stop. */
+  /** Camera world position. */
   camera: [x: number, y: number, z: number];
-  /** Point the camera looks at, at this stop. */
+  /** Point the camera looks at. */
   lookAt: [x: number, y: number, z: number];
-  /** Human-readable label for UI / debugging. */
+  /** Human-readable label (debug / UI). */
   label: string;
 }
 
-// Slow exterior sweep → interior entry → close product framing. Movement is
-// gentle and continuous (no abrupt cuts), per the camera philosophy.
-export const TOUR_STOPS: TourStop[] = [
-  { position: 0, state: ExperienceState.ExteriorOrbit, camera: [4.5, 1.8, 4.5], lookAt: [0, 0.5, 0], label: 'Exterior — approach' },
-  { position: 3, state: ExperienceState.ExteriorOrbit, camera: [0, 2.0, 6.0], lookAt: [0, 0.5, 0], label: 'Exterior — front' },
-  { position: 6, state: ExperienceState.InteriorEntry, camera: [-3.5, 1.5, 4.0], lookAt: [0, 0.5, 0], label: 'Interior — entry' },
-  { position: 9, state: ExperienceState.GuidedTour, camera: [-1.5, 1.2, 2.6], lookAt: [0.2, 0.5, 0], label: 'Tour stop 01' },
-  { position: 12, state: ExperienceState.GuidedTour, camera: [1.6, 1.1, 2.4], lookAt: [0.3, 0.5, 0], label: 'Tour stop 02' },
-  { position: 15, state: ExperienceState.ProductFocus, camera: [0, 1.4, 3.2], lookAt: [0, 0.5, 0], label: 'Product — focus' },
+export const JOURNEY_STOPS: JourneyStop[] = [
+  // Landing — far, high establishing shot. Anticipation, no UI.
+  { id: 'landing', state: ExperienceState.Landing, camera: [0, 4.5, 11], lookAt: [0, 0.5, 0], label: 'Landing' },
+  // Descent — the camera lowers toward the showroom.
+  { id: 'descent', state: ExperienceState.Descent, camera: [2, 2.8, 8.5], lookAt: [0, 0.5, 0], label: 'Descent' },
+  // Exterior orbit — a slow sweep around the exterior (two stops → gentle arc).
+  { id: 'exterior-approach', state: ExperienceState.ExteriorOrbit, camera: [5, 1.9, 5.5], lookAt: [0, 0.5, 0], label: 'Exterior — approach' },
+  { id: 'exterior-sweep', state: ExperienceState.ExteriorOrbit, camera: [-4.5, 1.9, 5], lookAt: [0, 0.5, 0], label: 'Exterior — sweep' },
+  // UI Reveal — calm front framing; the spatial UI activates here.
+  { id: 'ui-reveal', state: ExperienceState.UiReveal, camera: [-0.08, 1.21, 5.4], lookAt: [-0.08, -0.74, 0.2], label: 'UI Reveal' },
+  // Interior Entry — approach the entrance, then move through it.
+  { id: 'entrance-approach', state: ExperienceState.InteriorEntry, camera: [-1.18, -0.5, 1.95], lookAt: [-0.51, -0.67, 0.08], label: 'Interior — approach' },
+  { id: 'entrance-through', state: ExperienceState.InteriorEntry, camera: [0.92, -0.57, 0.56], lookAt: [-0.51, -0.75, -1.55], label: 'Interior — entry' },
+  // Guided Tour — interior stops (each may surface a product/story).
+  { id: 'tour-01', state: ExperienceState.GuidedTour, camera: [1.83, -0.31, -1.8], lookAt: [-1.68, -1.06, -2.83], label: 'Tour Stop 01' },
+  { id: 'tour-02', state: ExperienceState.GuidedTour, camera: [0.83, -0.51, -1.68], lookAt: [-0.11, -1.22, -3.84], label: 'Tour Stop 02' },
+  { id: 'tour-03', state: ExperienceState.GuidedTour, camera: [0.99, -0.69, -2.01], lookAt: [2.28, -0.87, -2.97], label: 'Tour Stop 03' },
+  { id: 'tour-04', state: ExperienceState.GuidedTour, camera: [-0.33, -0.5, 0.3], lookAt: [-0.6, -0.8, -1.44], label: 'Tour Stop 04' },
 ];
 
-// Total timeline length, in seconds (last stop's position).
-export const TOUR_LENGTH = TOUR_STOPS[TOUR_STOPS.length - 1].position;
+// Alias kept for the camera spline source (TheatreCamera samples these in order).
+export const TOUR_STOPS = JOURNEY_STOPS;
 
-// Sequence position for a given experience state — first stop tagged with it.
-// Lets the state machine drive the playhead to the matching point on the tour.
-export function sequencePositionForState(state: ExperienceState): number | undefined {
-  return TOUR_STOPS.find((stop) => stop.state === state)?.position;
-}
+// Timeline length: positions are the array index, so length = last index.
+export const TOUR_LENGTH = JOURNEY_STOPS.length - 1;
+
+// Normalized progress (0→1) of each stop along the journey — the shared list the
+// camera spline samples and Next/Back navigation snaps to.
+export const STOP_PROGRESS: number[] = JOURNEY_STOPS.map((_, i) => i / (JOURNEY_STOPS.length - 1));

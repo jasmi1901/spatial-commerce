@@ -12,11 +12,9 @@
 // tree-shaken away.
 import * as theatreCore from '@theatre/core';
 import studioDefault from '@theatre/studio';
-import r3fExtensionDefault from '@theatre/r3f/dist/extension';
 
 interface StudioLike {
   initialize: (opts?: unknown) => void;
-  extend: (ext: unknown) => void;
   ui: { hide: () => void; restore: () => void };
 }
 
@@ -43,10 +41,6 @@ export function initStudio(): void {
     console.error('[theatre] Could not resolve studio.initialize() from @theatre/studio', studioDefault);
     return;
   }
-  // The R3F extension adds the 3D snapshot editor with transform gizmos and
-  // makes editable scene objects selectable. Must be registered before init.
-  const ext = (r3fExtensionDefault as { default?: unknown })?.default ?? r3fExtensionDefault;
-  studio.extend(ext);
   studio.initialize();
   initialized = true;
 }

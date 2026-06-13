@@ -1,6 +1,5 @@
 import { ShoppingBag } from 'lucide-react';
 import { useCart, useCommerceNav } from '../../features/commerce';
-import { scrollShowroomToTop } from '../../lib/scroll';
 
 // Floating top chrome: brand logo (center) and cart access (right).
 export function TopBar() {
@@ -15,9 +14,9 @@ export function TopBar() {
         <div className="flex-1 flex justify-center">
           <button
             type="button"
-            aria-label="Scroll to top"
-            onClick={scrollShowroomToTop}
-            className="pointer-events-auto cursor-pointer flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-2xl tracking-tight text-gray-800 hover:text-black dark:text-white/80 dark:hover:text-white mb-1"
+            aria-label="Reload — back to start"
+            onClick={() => window.location.reload()}
+            className="font-display pointer-events-auto cursor-pointer flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-2xl tracking-tight text-gray-800 hover:text-black dark:text-white/80 dark:hover:text-white mb-1"
           >
             <span className="font-bold">Spatial</span>
             <span className="font-normal opacity-80">Commerce</span>
