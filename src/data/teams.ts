@@ -31,7 +31,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     name: 'Saheena Nazrin',
     role: 'Frontend Developer',
     github: 'https://github.com/nazrinahamed-source',
-    linkedin: 'www.linkedin.com/in/saheena-nazrin-k',
+    linkedin: 'https://www.linkedin.com/in/saheena-nazrin-k',
     avatar: 'https://media.licdn.com/dms/image/v2/D4D03AQFuHIHCmX0zUw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1716318709327?e=1782345600&v=beta&t=V0jKN2dHaAP2E3od01kdSzHFjU-6Ax11DMN6MenqHSQ',
   },
 ];
